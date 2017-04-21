@@ -1,0 +1,175 @@
+<div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a
+
+    >gulp-fixmyjs (v1.0.2)</a>
+</h1>
+<h4>fixmyjs plugin for gulp</h4>
+<div class="apidocSectionDiv"><a
+    href="#apidoc.tableOfContents"
+    id="apidoc.tableOfContents"
+><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.gulp-fixmyjs">module gulp-fixmyjs</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.gulp-fixmyjs.gulp-fixmyjs">
+            function <span class="apidocSignatureSpan"></span>gulp-fixmyjs
+            <span class="apidocSignatureSpan">(options)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.gulp-fixmyjs" id="apidoc.module.gulp-fixmyjs">module gulp-fixmyjs</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.gulp-fixmyjs.gulp-fixmyjs" id="apidoc.element.gulp-fixmyjs.gulp-fixmyjs">
+        function <span class="apidocSignatureSpan"></span>gulp-fixmyjs
+        <span class="apidocSignatureSpan">(options)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">gulp-fixmyjs = function (options) {
+  &#x22;use strict&#x22;;
+
+  options = options || {};
+  if (options.lookup === void 0) {
+    options.lookup = true;
+  }
+  if (options.legacy === void 0) {
+    options.legacy = false;
+  }
+
+  if (options.lookup) {
+    var rcLoader = new RcLoader(&#x27;.jshintrc&#x27;, options, {});
+  }
+
+  var fixJS = function (contents, config) {
+    return fixmyjs.fix(contents, config);
+  };
+
+
+  if (options.legacy) {
+    fixJS = function (contents, config) {
+      jshint(contents, config);
+      return fixmyjs(jshint.data(), contents, config).run();
+    };
+  }
+
+
+  function error(message) {
+    return new gutil.PluginError(&#x22;gulp-fixmyjs&#x22;, message);
+  }
+
+  function gulpFixmyjs(file, enc, callback) {
+<span class="apidocCodeCommentSpan">    /*jshint validthis:true*/
+</span>
+
+    // Do nothing if no contents
+    if (file.isNull()) {
+      this.push(file);
+      return callback();
+    }
+
+
+    if (file.isStream()) {
+      this.emit(&#x22;error&#x22;, error(&#x22;Stream content is not supported&#x22;));
+      return callback();
+    }
+
+
+    if (file.isBuffer()) {
+      var fix = function (err, config) {
+        if (err) {
+          this.emit(&#x22;error&#x22;, error(&#x22;Error when reading .jshint config:\n&#x22; + err));
+        } else {
+          try {
+            file.contents = new Buffer(fixJS(String(file.contents), config));
+            this.push(file);
+          } catch (e) {
+            this.emit(&#x22;error&#x22;, error(&#x22;Error when running fixmyjs:\n&#x22; + e.stack));
+          }
+        }
+        return callback();
+      }.bind(this);
+
+
+      if (options.lookup) {
+        rcLoader.for(file.path, fix);
+      } else {
+        fix(null, options);
+      }
+
+
+    }
+  }
+
+
+  return through.obj(gulpFixmyjs);
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
